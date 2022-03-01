@@ -2,12 +2,12 @@
 
 // SPDX-License-Identifier: UNLICENSED 
 
-pragma solidity ^0.5.0;
+pragma solidity ^0.8.11;
 
 contract DCloud {
-  string public name = 'DCloud';
-  uint public fileCount = 0;
-  mapping(uint => File) public files;
+  string public name = 'DCloud'; //state variable 
+  uint public fileCount = 0; //number of files
+  mapping(uint => File) public files; // mapping() is used to take in a key and return the value for that key(here - file location)
 
   struct File {
     uint fileId;
@@ -17,9 +17,9 @@ contract DCloud {
     string fileName;
     string fileDescription;
     uint uploadTime;
-    address payable uploader;
+    address payable uploader;    // we use msg.sender global variable to find the uploader 
   }
-
+// event creation - events are used to be subscribed to by external consumers like our client side application
   event FileUploaded(
     uint fileId,
     string fileHash,
@@ -31,9 +31,9 @@ contract DCloud {
     address payable uploader
   );
 
-  constructor() public {
-  }
-
+  //constructor() public {
+  //}
+  //function to upload new files.
   function uploadFile(string memory _fileHash, uint _fileSize, string memory _fileType, string memory _fileName, string memory _fileDescription) public {
     
     // Makes sure the file hash exists
@@ -58,8 +58,8 @@ contract DCloud {
     fileCount ++;
 
     // Add File to the contract
-    files[fileCount] = File(fileCount, _fileHash, _fileSize, _fileType, _fileName, _fileDescription, now, msg.sender);
+    files[fileCount] = File(fileCount, _fileHash, _fileSize, _fileType, _fileName, _fileDescription, block.timestamp, payable(msg.sender));
     // Trigger an event
-    emit FileUploaded(fileCount, _fileHash, _fileSize, _fileType, _fileName, _fileDescription, now, msg.sender);
+    emit FileUploaded(fileCount, _fileHash, _fileSize, _fileType, _fileName, _fileDescription, block.timestamp, payable(msg.sender));
   }
 }
